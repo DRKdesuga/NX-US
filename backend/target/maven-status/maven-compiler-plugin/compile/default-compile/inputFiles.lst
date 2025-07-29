@@ -4,5 +4,10 @@
 /home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/dto/request/NLPRequest.java
 /home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/dto/response/NLPResponse.java
 /home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/dto/response/PingResponse.java
-/home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/service/nlp/IntentSlotParser.java
+/home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/errors/NLPErrors.java
+/home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/service/nlp/IntentDetector.java
 /home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/service/nlp/NLPService.java
+/home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/service/nlp/Preprocessor.java
+/home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/service/nlp/SlotExtractor.java
+/home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/service/nlp/extractors/ChatGPTSlotExtractor.java
+/home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/service/nlp/extractors/PlayMusicSlotExtractor.java

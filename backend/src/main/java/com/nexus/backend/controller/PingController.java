@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/ping")
 public class PingController {
-
+    //Controller to look for server status.
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PingResponse> ping() {
         return ResponseEntity.ok(new PingResponse("Server is running"));
