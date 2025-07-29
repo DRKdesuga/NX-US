@@ -1,0 +1,8 @@
+/home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/NexusApplication.java
+/home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/controller/NLPController.java
+/home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/controller/PingController.java
+/home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/dto/request/NLPRequest.java
+/home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/dto/response/NLPResponse.java
+/home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/dto/response/PingResponse.java
+/home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/service/nlp/IntentSlotParser.java
+/home/drkdesuga/Desktop/personal/Nexus/NX/backend/src/main/java/com/nexus/backend/service/nlp/NLPService.java
