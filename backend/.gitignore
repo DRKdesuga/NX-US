@@ -1,0 +1,74 @@
+# =============== Java ===============
+*.class
+*.log
+*.jar
+*.war
+*.ear
+
+# =============== Maven ===============
+/target/
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.properties
+
+# =============== IntelliJ IDEA ===============
+.idea/
+*.iml
+*.iws
+out/
+*.ipr
+
+# =============== VSCode ===============
+.vscode/
+
+# =============== OS ===============
+.DS_Store
+Thumbs.db
+
+# =============== Logs ===============
+*.log
+logs/
+*.out
+
+# =============== Lombok ===============
+lombok.config
+
+# =============== Environment config ===============
+.env
+*.env
+
+# =============== Test reports ===============
+test-output/
+surefire-reports/
+
+# =============== Swagger docs ===============
+swagger-ui/
+.openapi/
+
+# =============== Compiled files ===============
+/bin/
+/build/
+
+# =============== Coverage tools ===============
+jacoco.exec
+coverage/
+*.ec
+*.exec
+
+# =============== Spring specific ===============
+*.h2.db
+*.mv.db
+*.trace.db
+
+# =============== Backup ===============
+*.bak
+*.tmp
+*.swp
+
+# =============== IDE crash dumps ===============
+hs_err_pid*.log
+replay_pid*.log
+
+# ============== application.properties ==========
+src/main/resources/application.properties
