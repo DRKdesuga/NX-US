@@ -22,7 +22,7 @@ public class IntentDetector {
             return "play_music";
         }
 
-        if (text.contains("chat") || text.contains("gpt") || text.startsWith("tell me") || text.startsWith("what is")) {
+        if (text.contains("chat") || text.contains("gpt") || text.contains("tell me") || text.startsWith("what is")) {
             return "chat_gpt_query";
         }
 

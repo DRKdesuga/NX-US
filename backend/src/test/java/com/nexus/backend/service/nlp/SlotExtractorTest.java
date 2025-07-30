@@ -65,6 +65,15 @@ public class SlotExtractorTest {
     }
 
     @Test
+    public void testChatGptExtractionNoisy() throws NLPErrors {
+        String query = "I'm starting to thing about chinese history and stull and I want you to tell me a story about dragons";
+        String intent = intentDetector.detect(preprocessor.clean(query));
+        Map<String, String> slots = slotExtractor.extractSlots(intent, query);
+
+        assertEquals("a story about dragons", slots.get("prompt"));
+    }
+
+    @Test
     public void testChatGptExtractionWithWhatIs() throws NLPErrors {
         String query = "what is quantum computing";
         String intent = intentDetector.detect(preprocessor.clean(query));

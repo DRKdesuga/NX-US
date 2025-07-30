@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class ChatGPTSlotExtractor {
 
     private static final Pattern PROMPT_PATTERN = Pattern.compile(
-            "^(tell me|what is|explain|define)\\s+(?<prompt>.+)",
+            "(?:tell me|what is|explain|define)\\s+(?<prompt>.+)",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -25,10 +25,11 @@ public class ChatGPTSlotExtractor {
         Map<String, String> slots = new HashMap<>();
 
         Matcher matcher = PROMPT_PATTERN.matcher(text);
-        if (matcher.find()) {
-            String prompt = matcher.group("prompt");
-            if (prompt != null && !prompt.isBlank()) {
-                slots.put("prompt", prompt.strip());
+        while (matcher.find()) {
+            String prompt = matcher.group("prompt").trim();
+            if (!prompt.isEmpty()) {
+                slots.put("prompt", prompt);
+                break;
             }
         }
 
