@@ -60,6 +60,11 @@
             <version>3.2.4</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
         <!-- (Optionnel) Si tu veux parser manuellement du JSON plus tard -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
