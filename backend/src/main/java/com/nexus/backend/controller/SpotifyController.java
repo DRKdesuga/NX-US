@@ -7,6 +7,11 @@ import com.nexus.backend.dto.response.SpotifyTokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.nexus.backend.dto.request.SpotifySearchRequest;
+import com.nexus.backend.dto.response.SpotifySearchResponse;
+import org.springframework.http.HttpStatus;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.Parameter;
 
 @RestController
 @RequestMapping("/spotify")
@@ -42,5 +47,26 @@ public class SpotifyController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+
+    @PostMapping("/search")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<?> searchTrack(
+            @RequestBody SpotifySearchRequest request,
+            @Parameter(hidden = true)
+            @RequestHeader("Authorization") String bearerToken) {
+        try {
+            String accessToken = bearerToken.replace("Bearer ", "");
+            SpotifySearchResponse response = spotifyService.searchTrack(request.getQuery(), accessToken);
+            if (response == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No track found");
+            }
+            return ResponseEntity.ok(response);
+        } catch (SpotifyErrors e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+
 
 }
