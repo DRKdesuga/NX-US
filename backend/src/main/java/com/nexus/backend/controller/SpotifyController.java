@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.Parameter;
 import com.nexus.backend.dto.request.SpotifyPlayRequest;
 import com.nexus.backend.dto.response.SpotifyPlayResponse;
+import com.nexus.backend.dto.response.SpotifyPauseResponse;
 
 @RestController
 @RequestMapping("/spotify")
@@ -88,6 +89,25 @@ public class SpotifyController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @PostMapping("/pause")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<?> pauseTrack(@RequestHeader("Authorization") String bearerToken) {
+        try {
+            String accessToken = bearerToken.replace("Bearer ", "");
+            SpotifyPauseResponse response = spotifyService.pauseTrack(accessToken);
+
+            if (!response.isSuccess()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to pause playback");
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (SpotifyErrors e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 
 
 }

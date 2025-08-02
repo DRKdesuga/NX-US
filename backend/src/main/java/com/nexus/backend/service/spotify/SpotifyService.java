@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatusCode;
 import com.nexus.backend.dto.response.SpotifyPlayResponse;
+import com.nexus.backend.dto.response.SpotifyPauseResponse;
 
 /**
  * Service layer to encapsulate Spotify-related operations.
@@ -89,5 +90,26 @@ public class SpotifyService {
             throw new SpotifyErrors("Failed to play track: " + e.getMessage());
         }
     }
+
+    public SpotifyPauseResponse pauseTrack(String accessToken) throws SpotifyErrors {
+        try {
+            WebClient client = WebClient.create("https://api.spotify.com");
+
+            HttpStatusCode statusCode = client.put()
+                    .uri("/v1/me/player/pause")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .map(ResponseEntity::getStatusCode)
+                    .block();
+
+            boolean success = statusCode != null && statusCode.is2xxSuccessful();
+            return new SpotifyPauseResponse(success);
+
+        } catch (Exception e) {
+            throw new SpotifyErrors("Failed to pause track: " + e.getMessage());
+        }
+    }
+
 
 }
