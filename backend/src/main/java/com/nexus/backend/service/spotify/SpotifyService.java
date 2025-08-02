@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatusCode;
 import com.nexus.backend.dto.response.SpotifyPlayResponse;
 import com.nexus.backend.dto.response.SpotifyPauseResponse;
 import com.nexus.backend.dto.response.SpotifyNextResponse;
+import com.nexus.backend.dto.response.SpotifyPreviousResponse;
 
 /**
  * Service layer to encapsulate Spotify-related operations.
@@ -211,6 +212,27 @@ public class SpotifyService {
             throw new SpotifyErrors("Failed to skip to next track: " + e.getMessage());
         }
     }
+
+    public SpotifyPreviousResponse previousTrack(String accessToken) throws SpotifyErrors {
+        try {
+            WebClient client = WebClient.create("https://api.spotify.com");
+
+            HttpStatusCode statusCode = client.post()
+                    .uri("/v1/me/player/previous")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .map(ResponseEntity::getStatusCode)
+                    .block();
+
+            boolean success = statusCode != null && statusCode.is2xxSuccessful();
+            return new SpotifyPreviousResponse(success);
+        } catch (Exception e) {
+            throw new SpotifyErrors("Failed to skip to previous track: " + e.getMessage());
+        }
+    }
+
 
 
 }

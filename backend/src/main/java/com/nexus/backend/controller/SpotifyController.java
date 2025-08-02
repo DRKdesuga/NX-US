@@ -17,6 +17,7 @@ import com.nexus.backend.dto.response.SpotifyPlayResponse;
 import com.nexus.backend.dto.response.SpotifyPauseResponse;
 import com.nexus.backend.dto.request.SpotifyPlayPlaylistRequest;
 import com.nexus.backend.dto.response.SpotifyNextResponse;
+import com.nexus.backend.dto.response.SpotifyPreviousResponse;
 
 @RestController
 @RequestMapping("/spotify")
@@ -146,5 +147,21 @@ public class SpotifyController {
         }
     }
 
+    @PostMapping("/previous")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<?> previousTrack(@RequestHeader("Authorization") String bearerToken) {
+        try {
+            String accessToken = bearerToken.replace("Bearer ", "");
+            SpotifyPreviousResponse response = spotifyService.previousTrack(accessToken);
+
+            if (!response.isSuccess()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to skip to previous track");
+            }
+
+            return ResponseEntity.ok(response);
+        } catch (SpotifyErrors e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 
 }
