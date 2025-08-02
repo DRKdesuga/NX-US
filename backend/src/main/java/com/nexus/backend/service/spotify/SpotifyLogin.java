@@ -32,8 +32,7 @@ public class SpotifyLogin {
         if (clientId == null || redirectUri == null) {
             throw new SpotifyErrors("Spotify clientId or redirectUri not configured");
         }
-
-        String scope = URLEncoder.encode("user-read-private user-read-email", StandardCharsets.UTF_8);
+        String scope = URLEncoder.encode("user-read-private user-read-email user-modify-playback-state", StandardCharsets.UTF_8);
         String encodedRedirect = URLEncoder.encode(redirectUri, StandardCharsets.UTF_8);
 
         return "https://accounts.spotify.com/authorize" +

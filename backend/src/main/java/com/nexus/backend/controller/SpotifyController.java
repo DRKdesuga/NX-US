@@ -12,6 +12,8 @@ import com.nexus.backend.dto.response.SpotifySearchResponse;
 import org.springframework.http.HttpStatus;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.Parameter;
+import com.nexus.backend.dto.request.SpotifyPlayRequest;
+import com.nexus.backend.dto.response.SpotifyPlayResponse;
 
 @RestController
 @RequestMapping("/spotify")
@@ -67,6 +69,25 @@ public class SpotifyController {
         }
     }
 
+    @PostMapping("/play")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<?> playTrack(
+            @RequestBody SpotifyPlayRequest request,
+            @RequestHeader("Authorization") String bearerToken) {
+        try {
+            String accessToken = bearerToken.replace("Bearer ", "");
+            SpotifyPlayResponse response = spotifyService.playTrack(request.getUri(), accessToken);
+
+            if (!response.isSuccess()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to start playback.");
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (SpotifyErrors e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 
 
 }

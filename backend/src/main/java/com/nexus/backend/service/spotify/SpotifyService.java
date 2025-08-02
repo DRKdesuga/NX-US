@@ -9,6 +9,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.http.HttpHeaders;
 import com.nexus.backend.dto.response.SpotifySearchResponse;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatusCode;
+import com.nexus.backend.dto.response.SpotifyPlayResponse;
 
 /**
  * Service layer to encapsulate Spotify-related operations.
@@ -61,5 +65,29 @@ public class SpotifyService {
         }
     }
 
+    public SpotifyPlayResponse playTrack(String uri, String accessToken) throws SpotifyErrors {
+        try {
+            WebClient client = WebClient.builder()
+                    .baseUrl("https://api.spotify.com")
+                    .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .build();
+
+            String body = "{\"uris\": [\"" + uri + "\"]}";
+
+            HttpStatusCode status = client.put()
+                    .uri("/v1/me/player/play")
+                    .bodyValue(body)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .map(ResponseEntity::getStatusCode)
+                    .block();
+
+            return new SpotifyPlayResponse(status != null && status.is2xxSuccessful());
+
+        } catch (Exception e) {
+            throw new SpotifyErrors("Failed to play track: " + e.getMessage());
+        }
+    }
 
 }
