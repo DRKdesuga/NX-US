@@ -110,33 +110,68 @@ public class SpotifyService {
             throw new SpotifyErrors("Failed to pause track: " + e.getMessage());
         }
     }
+    private double similarity(String a, String b) {
+        a = a.toLowerCase().replaceAll("[^a-z0-9 ]", "");
+        b = b.toLowerCase().replaceAll("[^a-z0-9 ]", "");
+
+        String[] wordsA = a.split("\\s+");
+        String[] wordsB = b.split("\\s+");
+
+        int common = 0;
+        for (String wordA : wordsA) {
+            for (String wordB : wordsB) {
+                if (wordA.equals(wordB)) {
+                    common++;
+                    break;
+                }
+            }
+        }
+
+        int total = Math.max(wordsA.length, wordsB.length);
+        return total == 0 ? 1.0 : (double) common / total;
+    }
+
 
     public SpotifyPlayResponse playUserPlaylistByName(String playlistName, String accessToken) throws SpotifyErrors {
         try {
             WebClient client = WebClient.create("https://api.spotify.com");
 
             JsonNode playlists = client.get()
-                    .uri("/v1/me/playlists?limit=50") // on limite à 50 pour être safe
+                    .uri("/v1/me/playlists?limit=50")
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                     .retrieve()
                     .bodyToMono(JsonNode.class)
                     .block();
 
             JsonNode items = playlists.path("items");
+            if (items == null || !items.isArray()) {
+                throw new SpotifyErrors("Invalid response from Spotify");
+            }
 
-            String playlistUri = null;
+            String bestUri = null;
+            double bestScore = 0.0;
+
             for (JsonNode item : items) {
-                if (item.path("name").asText().equalsIgnoreCase(playlistName)) {
-                    playlistUri = item.path("uri").asText();
-                    break;
+                String name = item.path("name").asText();
+                String uri = item.path("uri").asText();
+
+                double score = similarity(name, playlistName);
+                if (score == 1.0) {
+                    bestUri = uri;
+                    break; // Match parfait
+                }
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestUri = uri;
                 }
             }
 
-            if (playlistUri == null) {
-                return new SpotifyPlayResponse(false); // Not found
+            if (bestUri == null) {
+                return new SpotifyPlayResponse(false);
             }
 
-            String body = String.format("{\"context_uri\": \"%s\"}", playlistUri);
+            String body = String.format("{\"context_uri\": \"%s\"}", bestUri);
 
             HttpStatusCode statusCode = client.put()
                     .uri("/v1/me/player/play")
@@ -155,6 +190,5 @@ public class SpotifyService {
             throw new SpotifyErrors("Failed to play playlist: " + e.getMessage());
         }
     }
-
 
 }
