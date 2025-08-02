@@ -111,5 +111,50 @@ public class SpotifyService {
         }
     }
 
+    public SpotifyPlayResponse playUserPlaylistByName(String playlistName, String accessToken) throws SpotifyErrors {
+        try {
+            WebClient client = WebClient.create("https://api.spotify.com");
+
+            JsonNode playlists = client.get()
+                    .uri("/v1/me/playlists?limit=50") // on limite à 50 pour être safe
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                    .retrieve()
+                    .bodyToMono(JsonNode.class)
+                    .block();
+
+            JsonNode items = playlists.path("items");
+
+            String playlistUri = null;
+            for (JsonNode item : items) {
+                if (item.path("name").asText().equalsIgnoreCase(playlistName)) {
+                    playlistUri = item.path("uri").asText();
+                    break;
+                }
+            }
+
+            if (playlistUri == null) {
+                return new SpotifyPlayResponse(false); // Not found
+            }
+
+            String body = String.format("{\"context_uri\": \"%s\"}", playlistUri);
+
+            HttpStatusCode statusCode = client.put()
+                    .uri("/v1/me/player/play")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .bodyValue(body)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .map(ResponseEntity::getStatusCode)
+                    .block();
+
+            boolean success = statusCode != null && statusCode.is2xxSuccessful();
+            return new SpotifyPlayResponse(success);
+
+        } catch (Exception e) {
+            throw new SpotifyErrors("Failed to play playlist: " + e.getMessage());
+        }
+    }
+
 
 }

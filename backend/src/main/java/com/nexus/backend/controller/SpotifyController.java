@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import com.nexus.backend.dto.request.SpotifyPlayRequest;
 import com.nexus.backend.dto.response.SpotifyPlayResponse;
 import com.nexus.backend.dto.response.SpotifyPauseResponse;
+import com.nexus.backend.dto.request.SpotifyPlayPlaylistRequest;
 
 @RestController
 @RequestMapping("/spotify")
@@ -108,6 +109,24 @@ public class SpotifyController {
         }
     }
 
+    @PostMapping("/playplaylist")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<?> playPlaylist(@RequestBody SpotifyPlayPlaylistRequest request,
+                                          @RequestHeader("Authorization") String bearerToken) {
+        try {
+            String accessToken = bearerToken.replace("Bearer ", "");
+            SpotifyPlayResponse response = spotifyService.playUserPlaylistByName(request.getName(), accessToken);
+
+            if (!response.isSuccess()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Playlist not found or failed to play.");
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (SpotifyErrors e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 
 
 }
