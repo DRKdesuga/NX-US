@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpotifySearchRequest {
-    private String query;
+    private String title;
+    private String artist;
 }

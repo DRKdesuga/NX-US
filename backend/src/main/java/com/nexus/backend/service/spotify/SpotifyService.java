@@ -35,9 +35,19 @@ public class SpotifyService {
         return spotifyLogin.exchangeCodeForToken(code);
     }
 
-    public SpotifySearchResponse searchTrack(String query, String accessToken) throws SpotifyErrors {
+    public SpotifySearchResponse searchTrack(String title, String artist, String accessToken) throws SpotifyErrors {
         try {
             WebClient client = WebClient.create("https://api.spotify.com");
+
+            StringBuilder queryBuilder = new StringBuilder();
+            if (title != null && !title.isEmpty()) {
+                queryBuilder.append("track:").append(title).append(" ");
+            }
+            if (artist != null && !artist.isEmpty()) {
+                queryBuilder.append("artist:").append(artist);
+            }
+
+            String query = queryBuilder.toString().trim();
 
             return client.get()
                     .uri(uriBuilder -> uriBuilder
@@ -67,6 +77,7 @@ public class SpotifyService {
             throw new SpotifyErrors("Failed to search track: " + e.getMessage());
         }
     }
+
 
     public SpotifyPlayResponse playTrack(String uri, String accessToken) throws SpotifyErrors {
         try {
@@ -160,7 +171,7 @@ public class SpotifyService {
                 double score = similarity(name, playlistName);
                 if (score == 1.0) {
                     bestUri = uri;
-                    break; // Match parfait
+                    break;
                 }
 
                 if (score > bestScore) {

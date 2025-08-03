@@ -63,7 +63,11 @@ public class SpotifyController {
             @RequestHeader("Authorization") String bearerToken) {
         try {
             String accessToken = bearerToken.replace("Bearer ", "");
-            SpotifySearchResponse response = spotifyService.searchTrack(request.getQuery(), accessToken);
+            SpotifySearchResponse response = spotifyService.searchTrack(
+                    request.getTitle(),
+                    request.getArtist(),
+                    accessToken
+            );
             if (response == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No track found");
             }
@@ -72,7 +76,6 @@ public class SpotifyController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-
     @PostMapping("/play")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<?> playTrack(
