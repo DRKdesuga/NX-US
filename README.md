@@ -172,6 +172,15 @@ mvn spring-boot:run
 - User profile support
 
 ---
+## 🖼️ Screenshots
+
+![Sample Output](README_SRC/spring_launch.png)
+![Sample Output](README_SRC/spotify_playPLAYLIST.png)
+![Sample Output](README_SRC/spotify_search.png)
+![Sample Output](README_SRC/gpt_request.png)
+![Sample Output](README_SRC/qurey_extraction.png)
+
+---
 
 ## 👨‍💻 Author
 
