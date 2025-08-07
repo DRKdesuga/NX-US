@@ -3,7 +3,7 @@
 This project is the backend for **Nexus**, a smart assistant application currently under development.  
 It provides endpoints to interact with **Spotify**, **OpenAI GPT**, and more features coming soon.
 
-Built with **Spring Boot**, this REST API is designed to be modular, extensible, and easy to integrate with a frontend (Angular).
+Built with **Spring Boot**, this REST API is designed to be modular, extensible, and easy to integrate with a frontend.
 
 ---
 
