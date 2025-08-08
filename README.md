@@ -150,6 +150,19 @@ You can ask questions, generate text, summaries, etc.
 ```bash
 mvn spring-boot:run
 ```
+
+- You can also use Docker, make sure Docker and Docker Compose are installed.
+
+```bash
+docker-compose up --build
+```
+✅ Notes:
+- The Dockerfile builds the app using maven:3.9.4-eclipse-temurin-21 and runs it using eclipse-temurin:21-jdk-alpine.
+
+- The application.properties file must be baked into the image under src/main/resources/. Make sure it's correctly copied before the mvn package phase.
+
+- You can also mount your application.properties from the host using a Docker volume if needed.
+
 4. Visit Swagger UI:  
 [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
