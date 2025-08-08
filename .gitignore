@@ -70,3 +70,5 @@ coverage/
 hs_err_pid*.log
 replay_pid*.log
 
+# ============== application.properties ==========
+src/main/resources/application.properties
