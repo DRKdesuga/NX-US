@@ -1,0 +1,4 @@
+<button *ngIf="!spotify.isConnected(); else ok" class="connect" (click)="connect()">Connect Spotify</button>
+<ng-template #ok>
+  <button class="connect ok" disabled>Connected to Spotify</button>
+</ng-template>

@@ -1,0 +1,36 @@
+.bar {
+  display:flex;
+  gap:12px;
+  padding:12px;
+  border-top:1px solid rgba(255,255,255,.06);
+  background: rgba(7,10,15,.35);
+  backdrop-filter: blur(6px);
+  border-radius: 14px;
+}
+
+input {
+  flex:1;
+  background: rgba(11,16,24,.8);
+  color:#e8ecf1;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:12px;
+  padding:12px 14px;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+input:hover { border-color: rgba(255,255,255,.18); }
+input:focus { border-color: rgba(0,207,255,.45); box-shadow: 0 0 0 3px rgba(0,207,255,.15); background: rgba(12,18,28,.92); }
+
+button {
+  background:#10d19a;
+  color:#06130a;
+  border:0;
+  padding:12px 16px;
+  border-radius:12px;
+  font-weight:700;
+  cursor: pointer;
+  transition: transform .08s ease, filter .15s ease, opacity .15s ease;
+}
+button:hover { filter: brightness(1.05); }
+button:active { transform: translateY(1px); }
+button:disabled { opacity:.6; cursor: default; }

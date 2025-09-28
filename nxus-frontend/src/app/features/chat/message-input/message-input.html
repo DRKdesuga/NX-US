@@ -1,0 +1,4 @@
+<form (submit)="$event.preventDefault(); submit()" class="bar">
+  <input #box type="text" placeholder="Ask anything…" (keyup.enter)="submit()" />
+  <button type="button" (click)="submit()">Send</button>
+</form>

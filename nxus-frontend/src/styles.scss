@@ -1,0 +1,9 @@
+:root { color-scheme: dark; }
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #070a0f;
+  overflow: hidden; /* no scroll bar frame */
+}
+* { box-sizing: border-box; }

@@ -1,0 +1,20 @@
+<div class="chat-bg">
+  <div class="chat-container" [class.intro]="isIntro">
+    <header class="chat-header">
+      <div class="brand">
+        <span class="dot"></span>
+        <span class="title">Nexus</span>
+      </div>
+      <app-connect-spotify class="ml-auto"></app-connect-spotify>
+    </header>
+
+    <app-now-playing [title]="nowPlaying"></app-now-playing>
+    <app-message-list [messages]="messages" [thinking]="thinking"></app-message-list>
+
+    <div class="composer" [class.intro]="isIntro">
+      <h1 *ngIf="isIntro" class="intro-title">Speak to <span>Nexus</span></h1>
+      <p *ngIf="isIntro" class="intro-sub">Ask anything. Control Spotify. Get answers.</p>
+      <app-message-input (send)="onSend($event)"></app-message-input>
+    </div>
+  </div>
+</div>
