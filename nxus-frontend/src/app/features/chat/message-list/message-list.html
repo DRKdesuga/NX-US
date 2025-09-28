@@ -1,1 +1,24 @@
-<p>message-list works!</p>
+<div class="messages" #container>
+  <div
+    *ngFor="let m of messages"
+    class="row"
+    [class.user]="m.author === 'user'">
+
+    <div class="avatar" [attr.aria-label]="m.author === 'gpt' ? 'Nexus' : 'You'">
+      <span>{{ m.author === 'gpt' ? '🤖' : '👤' }}</span>
+    </div>
+
+    <div class="bubble">
+      <div class="txt">{{ m.text }}</div>
+      <div class="meta" *ngIf="m.meta?.playing as playing">▶ Playing: {{ playing }}</div>
+    </div>
+  </div>
+
+  <!-- typing (bot) -->
+  <div class="row" *ngIf="thinking">
+    <div class="avatar"><span>🤖</span></div>
+    <div class="bubble typing">
+      <app-typing-indicator></app-typing-indicator>
+    </div>
+  </div>
+</div>

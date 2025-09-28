@@ -1,11 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-now-playing',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './now-playing.html',
   styleUrl: './now-playing.scss'
 })
 export class NowPlaying {
-
+  @Input() title: string | null = null;
 }

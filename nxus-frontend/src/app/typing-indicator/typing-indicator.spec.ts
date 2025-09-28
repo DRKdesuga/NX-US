@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NowPlaying } from './now-playing';
+import { TypingIndicator } from './typing-indicator';
 
-describe('NowPlaying', () => {
-  let component: NowPlaying;
-  let fixture: ComponentFixture<NowPlaying>;
+describe('TypingIndicator', () => {
+  let component: TypingIndicator;
+  let fixture: ComponentFixture<TypingIndicator>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NowPlaying]
+      imports: [TypingIndicator]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(NowPlaying);
+    fixture = TestBed.createComponent(TypingIndicator);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

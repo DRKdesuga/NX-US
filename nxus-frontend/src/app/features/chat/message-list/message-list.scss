@@ -1,0 +1,86 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+/* Scroll area */
+.messages {
+  position: relative;
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+
+  /* push scrollbar farther from content */
+  padding: 8px 72px 18px 12px; /* right padding widened */
+  box-sizing: border-box;
+  scrollbar-gutter: stable both-edges;
+  scroll-behavior: smooth;
+}
+
+/* Optional nicer scrollbar */
+.messages::-webkit-scrollbar { width: 10px; }
+.messages::-webkit-scrollbar-track { background: transparent; }
+.messages::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,.12);
+  border-radius: 10px;
+}
+.messages { scrollbar-width: thin; }
+
+/* One row per message */
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 14px 0;
+}
+
+/* User messages on the RIGHT (avatar right, bubble right) */
+.row.user {
+  flex-direction: row-reverse;
+}
+
+/* Avatars */
+.avatar {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 6px 20px rgba(0,0,0,.35) inset, 0 2px 10px rgba(0,0,0,.25);
+  color: #9ec7ff;
+}
+
+/* Bubbles */
+.bubble {
+  max-width: 820px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(14,22,32,.45);
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 6px 26px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.04) inset;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* User bubble tone + align right */
+.row.user .bubble {
+  background: rgba(10,26,40,.35);
+  border: 1px solid rgba(123,220,255,.10);
+  align-self: flex-end;
+}
+
+/* Typing bubble width */
+.typing {
+  width: 68px;
+  padding: 10px 12px;
+}
+
+/* Small meta line (e.g., Playing...) */
+.meta {
+  margin-top: 6px;
+  font-size: 12px;
+  opacity: .8;
+}

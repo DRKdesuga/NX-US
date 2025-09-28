@@ -1,0 +1,14 @@
+.connect {
+  background:#1db954;
+  color:#06130a;
+  border:0;
+  padding:8px 12px;
+  border-radius:10px;
+  font-weight:700;
+  cursor: pointer;
+  transition: transform .06s ease, filter .15s ease;
+  user-select: none;
+}
+.connect:hover { filter: brightness(1.05); }
+.connect:active { transform: translateY(1px); }
+.connect.ok { background:#2d8f5e; cursor: default; opacity:.9; }
