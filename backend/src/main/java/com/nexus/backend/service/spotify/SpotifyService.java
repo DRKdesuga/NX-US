@@ -3,8 +3,10 @@ package com.nexus.backend.service.spotify;
 import com.nexus.backend.dto.response.SpotifyLoginResponse;
 import com.nexus.backend.dto.response.SpotifyTokenResponse;
 import com.nexus.backend.errors.SpotifyErrors;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.reactive.function.client.WebClient;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +19,11 @@ import com.nexus.backend.dto.response.SpotifyPauseResponse;
 import com.nexus.backend.dto.response.SpotifyNextResponse;
 import com.nexus.backend.dto.response.SpotifyPreviousResponse;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.UUID;
+
 /**
  * Service layer to encapsulate Spotify-related operations.
  */
@@ -25,6 +32,50 @@ import com.nexus.backend.dto.response.SpotifyPreviousResponse;
 public class SpotifyService {
 
     private final SpotifyLogin spotifyLogin;
+
+    private static final String AUTH_URL  = "https://accounts.spotify.com/authorize";
+
+    @Value("${spotify.client.id:${spotify.client-id:}}")
+    private String clientId;
+
+    @Value("${spotify.client.secret:${spotify.client-secret:}}")
+    private String clientSecret;
+
+    @Value("${spotify.redirect.uri:${spotify.redirect-uri:}}")
+    private String redirectUri;
+
+
+    @PostConstruct
+    void checkProps() {
+        if (isBlank(clientId) || isBlank(clientSecret) || isBlank(redirectUri)) {
+            throw new IllegalStateException(
+                    "Missing Spotify properties. Expected keys: " +
+                            "'spotify.client.id', 'spotify.client.secret', 'spotify.redirect.uri' " +
+                            "(or dash versions). Current redirectUri='" + redirectUri + "'."
+            );
+        }
+    }
+
+    public String buildAuthorizeUrl() {
+        String scopes = String.join(" ", List.of(
+                "user-read-private",
+                "user-read-email",
+                "playlist-read-private",
+                "user-modify-playback-state",
+                "user-read-playback-state"
+        ));
+
+        return AUTH_URL
+                + "?response_type=code"
+                + "&client_id="    + enc(clientId)
+                + "&redirect_uri=" + enc(redirectUri)
+                + "&scope="        + enc(scopes)
+                + "&state="        + enc(UUID.randomUUID().toString());
+    }
+
+
+    private static String enc(String v) { return URLEncoder.encode(v, StandardCharsets.UTF_8); }
+    private static boolean isBlank(String s) { return s == null || s.trim().isEmpty(); }
 
     public SpotifyLoginResponse generateLoginUrl() throws SpotifyErrors {
         String url = spotifyLogin.buildLoginURL();

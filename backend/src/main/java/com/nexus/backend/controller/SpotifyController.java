@@ -1,23 +1,18 @@
 package com.nexus.backend.controller;
 
-import com.nexus.backend.dto.response.SpotifyLoginResponse;
+import com.nexus.backend.dto.request.SpotifyPlayPlaylistRequest;
+import com.nexus.backend.dto.request.SpotifyPlayRequest;
+import com.nexus.backend.dto.request.SpotifySearchRequest;
+import com.nexus.backend.dto.response.*;
 import com.nexus.backend.errors.SpotifyErrors;
 import com.nexus.backend.service.spotify.SpotifyService;
-import com.nexus.backend.dto.response.SpotifyTokenResponse;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.nexus.backend.dto.request.SpotifySearchRequest;
-import com.nexus.backend.dto.response.SpotifySearchResponse;
-import org.springframework.http.HttpStatus;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.Parameter;
-import com.nexus.backend.dto.request.SpotifyPlayRequest;
-import com.nexus.backend.dto.response.SpotifyPlayResponse;
-import com.nexus.backend.dto.response.SpotifyPauseResponse;
-import com.nexus.backend.dto.request.SpotifyPlayPlaylistRequest;
-import com.nexus.backend.dto.response.SpotifyNextResponse;
-import com.nexus.backend.dto.response.SpotifyPreviousResponse;
 
 @RestController
 @RequestMapping("/spotify")
@@ -25,35 +20,46 @@ import com.nexus.backend.dto.response.SpotifyPreviousResponse;
 public class SpotifyController {
 
     private final SpotifyService spotifyService;
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
 
     @GetMapping("/login")
     public ResponseEntity<?> login() {
-        try {
-            SpotifyLoginResponse response = spotifyService.generateLoginUrl();
-            return ResponseEntity.ok(response);
-        } catch (SpotifyErrors e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        String url = spotifyService.buildAuthorizeUrl();
+        return ResponseEntity.ok(java.util.Map.of("url", url));
     }
 
     @GetMapping("/callback")
-    public ResponseEntity<?> callback(@RequestParam(name = "code") String code)
-    {
-
-        System.out.println("Received callback with code: " + code);
-
+    public ResponseEntity<?> callback(@RequestParam("code") String code) {
         if (code == null || code.isEmpty()) {
             return ResponseEntity.badRequest().body("Missing 'code' parameter");
         }
-
         try {
             SpotifyTokenResponse response = spotifyService.handleCallback(code);
-            return ResponseEntity.ok(response);
+            String token = response.getAccessToken();
+
+            // Escape minimal pour JS inline
+            String tokenJs = token.replace("\\", "\\\\").replace("'", "\\'");
+            String frontJs = frontendUrl.replace("\\", "\\\\").replace("'", "\\'");
+
+            String html =
+                    "<!doctype html><html><head><meta charset='utf-8'><title>Connected</title></head><body>" +
+                            "<script>(function(){"
+                            + "var t='" + tokenJs + "';"
+                            + "try{var o=window.opener||window.parent;if(o&&o!==window){o.postMessage({type:'spotify_token',access_token:t},'*');window.close();return;}}catch(e){}"
+                            + "try{var base='" + frontJs + "';var sep=base.indexOf('#')>=0?'':'#';"
+                            + "window.location.replace(base+sep+'spotify_token='+encodeURIComponent(t));}catch(e){document.body.textContent='Connected. You can close this window.';}"
+                            + "})();</script>"
+                            + "</body></html>";
+
+            return ResponseEntity.ok()
+                    .header("Content-Type", "text/html; charset=UTF-8")
+                    .body(html);
+
         } catch (SpotifyErrors e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
 
     @PostMapping("/search")
     @SecurityRequirement(name = "bearerAuth")
