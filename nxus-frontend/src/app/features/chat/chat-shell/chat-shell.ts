@@ -4,7 +4,7 @@ import { MessageList, ChatMessage } from '../message-list/message-list';
 import { MessageInput } from '../message-input/message-input';
 import { ConnectSpotify } from '../../spotify/connect-spotify/connect-spotify';
 import { NowPlaying } from '../../spotify/now-playing/now-playing';
-import { Nlp } from '../../../core/services/nlp';
+import { Nlp, NlpResult } from '../../../core/services/nlp';
 import { Gpt } from '../../../core/services/gpt';
 import { Spotify, SpotifySearchResponse } from '../../../core/services/spotify';
 
@@ -60,38 +60,42 @@ export class ChatShell {
     this.setThinking(true);
 
     try {
-      const nlpRes = await this.nlp.analyze(text);
+      const nlpRes: NlpResult = await this.nlp.analyze(text);
+      const intent = nlpRes?.intent ?? '';
 
-      // --- Music intents ---
-      if (nlpRes?.intent === 'play_music') {
-        const playlist = this.slot<string>(nlpRes.slots, ['playlist', 'playlistName', 'list']);
-        if (playlist) {
-          if (!this.spotify.isConnected()) { this.push({ author: 'gpt', text: 'Please connect Spotify first.' }); return; }
-          await this.spotify.playPlaylist(playlist);
-          this.nowPlaying = playlist;
-          this.push({ author: 'gpt', text: `Playing playlist: ${playlist}`, meta: { playing: playlist } });
-          return;
-        }
-
-        const title  = this.slot<string>(nlpRes.slots, ['title', 'song', 'songTitle', 'track']) ?? '';
-        const artist = this.slot<string>(nlpRes.slots, ['artist', 'artistName', 'singer']) ?? '';
-
+      // --- Play playlist ---
+      if (intent === 'play_playlist') {
+        const playlist = this.slot<string>(nlpRes.slots as any, ['playlist', 'playlistName', 'list']);
+        if (!playlist) { this.push({ author: 'gpt', text: 'Which playlist?' }); return; }
         if (!this.spotify.isConnected()) { this.push({ author: 'gpt', text: 'Please connect Spotify first.' }); return; }
 
-        // 1) search
+        const resp = await this.spotify.playPlaylist(playlist);
+        const ok = (resp as any)?.ok ?? (resp as any)?.success ?? true;
+        if (ok) {
+          this.nowPlaying = playlist;
+          this.push({ author: 'gpt', text: `Playing playlist: ${playlist}`, meta: { playing: playlist } });
+        } else {
+          this.push({ author: 'gpt', text: 'Playlist not found or failed to play.' });
+        }
+        return;
+      }
+
+      // --- Play music (track search -> play) ---
+      if (intent === 'play_music') {
+        const title  = this.slot<string>(nlpRes.slots as any, ['title', 'song', 'songTitle', 'track']) ?? '';
+        const artist = this.slot<string>(nlpRes.slots as any, ['artist', 'artistName', 'singer']) ?? '';
+        if (!this.spotify.isConnected()) { this.push({ author: 'gpt', text: 'Please connect Spotify first.' }); return; }
+
+        const query = `${title} ${artist}`.trim() || undefined;
         const res: SpotifySearchResponse = await this.spotify.search({
-          title,
-          artist,
-          query: `${title} ${artist}`.trim()
+          title: title || undefined,
+          artist: artist || undefined,
+          query
         });
 
         const uri = res?.uri;
-        if (!uri) {
-          this.push({ author: 'gpt', text: 'No result found.' });
-          return;
-        }
+        if (!uri) { this.push({ author: 'gpt', text: 'No result found.' }); return; }
 
-        // 2) play
         const playResp = await this.spotify.play(uri);
         const ok = (playResp as any)?.ok ?? (playResp as any)?.success ?? true;
 
@@ -105,32 +109,40 @@ export class ChatShell {
         return;
       }
 
-      if (nlpRes?.intent === 'pause_music') {
+      // --- Transport controls ---
+      if (intent === 'pause_music') {
         if (!this.spotify.isConnected()) { this.push({ author: 'gpt', text: 'Please connect Spotify first.' }); return; }
         await this.spotify.pause();
         this.push({ author: 'gpt', text: 'Paused.' });
         return;
       }
 
-      if (nlpRes?.intent === 'next_track') {
+      if (intent === 'next_track') {
         if (!this.spotify.isConnected()) { this.push({ author: 'gpt', text: 'Please connect Spotify first.' }); return; }
         await this.spotify.next();
         this.push({ author: 'gpt', text: 'Next track.' });
         return;
       }
 
-      if (nlpRes?.intent === 'previous_track') {
+      if (intent === 'previous_track') {
         if (!this.spotify.isConnected()) { this.push({ author: 'gpt', text: 'Please connect Spotify first.' }); return; }
         await this.spotify.previous();
         this.push({ author: 'gpt', text: 'Previous track.' });
         return;
       }
 
-      // --- GPT fallback ---
-      const r = await this.gpt.ask(text);
-      this.push({ author: 'gpt', text: r?.result ?? '' });
+      // --- Chat/GPT ---
+      if (intent === 'chat_gpt_query' || !intent) {
+        const r = await this.gpt.ask(text);
+        this.push({ author: 'gpt', text: r?.result ?? '' });
+        return;
+      }
+
+      // Fallback inconnu (rare, le /nlp renverra plutôt 400)
+      this.push({ author: 'gpt', text: "I didn't get that, try again." });
 
     } catch (err: any) {
+      // Affiche le message d’aide si /nlp a renvoyé 400
       this.push({ author: 'gpt', text: err?.message || 'Unknown error.' });
     } finally {
       this.setThinking(false);

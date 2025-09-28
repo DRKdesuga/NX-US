@@ -3,6 +3,7 @@ package com.nexus.backend.service.nlp;
 import com.nexus.backend.errors.NLPErrors;
 import com.nexus.backend.service.nlp.extractors.ChatGPTSlotExtractor;
 import com.nexus.backend.service.nlp.extractors.PlayMusicSlotExtractor;
+import com.nexus.backend.service.nlp.extractors.PlayPlaylistSlotExtractor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +23,8 @@ public class SlotExtractorTest {
         intentDetector = new IntentDetector();
         PlayMusicSlotExtractor playMusicSlotExtractor = new PlayMusicSlotExtractor();
         ChatGPTSlotExtractor chatGPTSlotExtractor = new ChatGPTSlotExtractor();
-        slotExtractor = new SlotExtractor(playMusicSlotExtractor, chatGPTSlotExtractor);
+        PlayPlaylistSlotExtractor playPlaylistSlotExtractor = new PlayPlaylistSlotExtractor();
+        slotExtractor = new SlotExtractor(playMusicSlotExtractor, chatGPTSlotExtractor, playPlaylistSlotExtractor);
     }
 
     @Test
